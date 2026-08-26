@@ -1,0 +1,48 @@
+name: Build memtool driver
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y flex bison bc libssl-dev wget xz-utils git
+    
+    - name: Download kernel source
+      run: |
+        git clone --depth=1 --branch chopin-r-oss https://github.com/MiCode/Xiaomi_Kernel_OpenSource.git kernel_source 2>/dev/null || \
+        git clone --depth=1 --branch chopin-s-oss https://github.com/MiCode/Xiaomi_Kernel_OpenSource.git kernel_source 2>/dev/null || \
+        git clone --depth=1 https://github.com/MiCode/Xiaomi_Kernel_OpenSource.git kernel_source
+    
+    - name: Download toolchain
+      run: |
+        wget -q https://releases.linaro.org/components/toolchain/binaries/latest-7/aarch64-linux-gnu/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu.tar.xz
+        tar -xf gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu.tar.xz
+        echo "$PWD/gcc-linaro-7.5.0-2019.12-x86_64_aarch64-linux-gnu/bin" >> $GITHUB_PATH
+    
+    - name: Prepare kernel
+      run: |
+        cd kernel_source
+        export ARCH=arm64
+        export CROSS_COMPILE=aarch64-linux-gnu-
+        make defconfig
+        make modules_prepare -j$(nproc)
+    
+    - name: Build driver
+      run: |
+        export ARCH=arm64
+        export CROSS_COMPILE=aarch64-linux-gnu-
+        make -C kernel_source M=$PWD modules -j$(nproc)
+    
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: memtool-ko
+        path: memtool.ko
