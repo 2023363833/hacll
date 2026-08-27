@@ -1,4 +1,4 @@
-obj-m += memtool.o
+obj-m += entry.o
 
 KDIR ?= /lib/modules/$(shell uname -r)/build
 PWD := $(shell pwd)
