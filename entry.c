@@ -15,9 +15,9 @@
 #include "breakpoint.h"
 #include "process.h"
 
-static DECLARE_WAIT_QUEUE_HEAD(breakpoint_wait_queue);
-static atomic_t breakpoint_triggered = ATOMIC_INIT(0);
-static atomic_t breakpoint_count = ATOMIC_INIT(0);
+DECLARE_WAIT_QUEUE_HEAD(breakpoint_wait_queue);
+atomic_t breakpoint_triggered = ATOMIC_INIT(0);
+atomic_t breakpoint_count = ATOMIC_INIT(0);
 
 long dispatch_ioctl(struct file* const file, unsigned int const cmd, unsigned long const arg)
 {
