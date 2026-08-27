@@ -8,7 +8,7 @@
 #include <linux/sched/mm.h>
 #include <linux/highmem.h>
 #include <asm/pgtable.h>
-
+#include <linux/io.h>
 /* 虚拟地址转物理地址 */
 static inline phys_addr_t translate_linear_address(struct mm_struct* mm, uintptr_t va)
 {
