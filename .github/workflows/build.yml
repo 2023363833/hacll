@@ -17,16 +17,19 @@ jobs:
     
     - name: Download kernel source
       run: |
-        git clone --depth=1 --branch chopin-r-oss https://github.com/MiCode/Xiaomi_Kernel_OpenSource.git kernel_source 2>/dev/null || \
-        git clone --depth=1 --branch chopin-s-oss https://github.com/MiCode/Xiaomi_Kernel_OpenSource.git kernel_source 2>/dev/null || \
-        git clone --depth=1 https://github.com/MiCode/Xiaomi_Kernel_OpenSource.git kernel_source
+        git clone --depth=1 --branch chopin-r-oss https://github.com/MiCode/Xiaomi_Kernel_OpenSource.git kernel_source
+    
+    - name: Check configs
+      run: |
+        cd kernel_source
+        ls arch/arm64/configs/ | grep -i chopin
     
     - name: Prepare kernel
       run: |
         cd kernel_source
         export ARCH=arm64
         export CROSS_COMPILE=aarch64-linux-gnu-
-        make defconfig
+        make chopin_defconfig 2>/dev/null || make chopin_user_defconfig 2>/dev/null || make defconfig
         make modules_prepare -j$(nproc)
     
     - name: Build driver
