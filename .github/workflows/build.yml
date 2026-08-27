@@ -42,7 +42,7 @@ jobs:
         make -C kernel_source M=$PWD modules -j$(nproc)
     
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: memtool-ko
         path: memtool.ko
